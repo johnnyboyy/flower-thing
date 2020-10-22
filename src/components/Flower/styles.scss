@@ -1,0 +1,218 @@
+$bg: rgb(210, 210, 180);
+$orange: #f8c475;
+$red: #f87575;
+$green: rgb(180, 210, 140);
+$blue: #75bff8;
+$sky: lighten($blue, 10);
+$yellow: #f3f875;
+$purple: #d9abff;
+$pink: #ff89b3;
+
+@mixin animation-duration($t) {
+	-moz-animation-duration: $t;
+	-webkit-animation-duration: $t;
+	-moz-animation-duration: $t;
+}
+@mixin animation-delay($t) {
+	-moz-animation-delay: $t;
+	-webkit-animation-delay: $t;
+	-moz-animation-delay: $t;
+}
+@mixin transform($property: none) {
+	transform: $property;
+	-moz-transform: $property;
+	-webkit-transform: $property;
+	-o-transform: $property;
+}
+
+@mixin animation($name, $duration, $delay: 0s, $fill-mode: forwards) {
+	-moz-animation-name: $name;
+	-webkit-animation-name: $name;
+
+	-webkit-animation-fill-mode: $fill-mode;
+	-moz-animation-fill-mode: $fill-mode;
+
+	-webkit-animation-delay: $delay;
+	-moz-animation-delay: $delay;
+
+	-moz-animation-duration: $duration;
+	-webkit-animation-duration: $duration;
+}
+@mixin keyframes($name) {
+	@-webkit-keyframes #{$name} {
+		@content;
+	}
+	@-moz-keyframes #{$name} {
+		@content;
+	}
+	@-ms-keyframes #{$name} {
+		@content;
+	}
+	@keyframes #{$name} {
+		@content;
+	}
+}
+
+@include keyframes(grow) {
+	from {
+		top: 15rem;
+	}
+	to {
+		top: 1rem;
+		opacity: 1;
+	}
+}
+
+@include keyframes(turn-right) {
+	from {
+		@include transform(rotateY(-140deg));
+	}
+	to {
+		@include transform(rotateY(0deg));
+	}
+}
+@include keyframes(turn-left) {
+	from {
+		@include transform(rotateY(140deg));
+	}
+	to {
+		@include transform(rotateY(0deg));
+	}
+}
+@mixin config($w, $top, $background, $border-color, $border-width, $leaves) {
+	height: $w;
+	width: $w;
+	opacity: 0;
+	margin-top: $top;
+	background-color: $background;
+	border-radius: $w * 5;
+	border: $border-width solid $border-color;
+	box-shadow: 0 0 0 0.2rem darken($border-color, 4), 0 0 0 0.2rem lighten($background, 4) inset;
+
+	span {
+		top: $w + $border-width + 0.2rem;
+		left: $w / 2.3;
+
+		@if $leaves == 0 {
+			&:before {
+				display: none;
+			}
+			&:after {
+				display: none;
+			}
+		}
+		@if $leaves == 1 {
+			&:before {
+				display: block;
+			}
+			&:after {
+				display: none;
+			}
+		}
+		@if $leaves == 2 {
+			&:before {
+				display: block;
+			}
+			&:after {
+				display: block;
+			}
+		}
+	}
+}
+
+.flower {
+	@include animation(grow, 4s);
+	top: 1rem;
+	position: absolute;
+	z-index: 10;
+	span {
+		background: $green;
+		width: 0.5rem;
+		z-index: 5;
+		height: 50rem;
+		display: block;
+		position: absolute;
+
+		&:after {
+			content: "";
+			@include transform(rotateY(-140deg));
+			transform-origin: left;
+			-moz-transform-origin: left;
+			-webkit-transform-origin: left;
+			width: 3rem;
+			height: 3rem;
+			display: block;
+			background: darken($green, 5);
+			border-radius: 2rem 0rem 2rem 0rem;
+			box-shadow: 0 0 0 0.2rem darken($green, 8) inset;
+			z-index: 0;
+			top: 1rem;
+			left: 0.5rem;
+			position: absolute;
+		}
+		&:before {
+			@include transform(rotateY(140deg));
+			transform-origin: right;
+			-moz-transform-origin: right;
+			-webkit-transform-origin: right;
+			@include animation(turn-left, 4s, 4s);
+			content: "";
+			width: 3rem;
+			height: 3rem;
+			display: block;
+			background: darken($green, 7);
+			border-radius: 0rem 2rem 0rem 2rem;
+			box-shadow: 0 0 0 0.2rem darken($green, 8) inset;
+			z-index: 0;
+			position: absolute;
+			left: -3rem;
+			top: 5rem;
+		}
+	}
+}
+
+html:after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	// height: 2rem;
+	// background: darken($bg, 6);
+}
+
+//Configuring the flowers:
+//=========================
+
+.flower-0 {
+	@include config(5rem, 1rem, $yellow, $orange, 1rem, 2);
+}
+.flower-1 {
+	@include config(6rem, 3rem, $sky, $blue, 1rem, 2);
+}
+.flower-2 {
+	@include config(3rem, 0rem, $orange, $red, 1.2rem, 0);
+}
+.flower-3 {
+	@include config(2rem, 3rem, $red, $orange, 3rem, 1);
+}
+.flower-4 {
+	@include config(3rem, 0rem, $blue, $sky, 1.2rem, 1);
+}
+.flower-5 {
+	@include config(4rem, 2rem, $purple, $pink, 0.7rem, 2);
+}
+.flower-6 {
+	@include config(5rem, 7rem, $red, $orange, 1.2rem, 2);
+}
+@for $i from 0 through 6 {
+	.flower-#{$i} {
+		@include animation-delay(0.3s * $i);
+		left: 1rem + (10rem * $i);
+		span:before {
+			@include animation(turn-right, 3s, 0.3s * $i);
+		}
+		span:after {
+			@include animation(turn-left, 2s, 0.4s * $i);
+		}
+	}
+}
